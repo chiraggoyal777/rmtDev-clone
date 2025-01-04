@@ -19,7 +19,7 @@ export default function JobListItem({
   function handleJobItemClick() {
     const searchParams = new URLSearchParams(location.search);
     if (openAsFullView) {
-      if (fromBookmarksPopover && searchParams.size > 0 && searchParams.has(searchParam)) {
+      if (fromBookmarksPopover && Array.from(searchParams.entries()).length > 0 && searchParams.has(searchParam)) {
         sessionStorage.setItem(SS_KEY_BOOKMARKS_POPOVER, "true");
         sessionStorage.setItem(SS_KEY_SEARCH_PARAMS, searchParams.toString());
       }
