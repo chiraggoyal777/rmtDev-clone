@@ -3,12 +3,12 @@ import { TPaginationDirection } from "../lib/types";
 import { useJobItemsContext } from "../hooks/useJobItemsContext";
 
 export default function PaginationControls() {
-  const { currentPage, handleChangePage, totalNumberOfPages } =
+  const { currentPage, handleChangePage, totalNumberOfPages, isLoading } =
     useJobItemsContext();
 
   return (
     <section className="pagination">
-      {currentPage > 1 && (
+      {(currentPage > 1 && !isLoading) && (
         <PaginationButton
           direction="previous"
           onClick={handleChangePage}
@@ -16,7 +16,7 @@ export default function PaginationControls() {
         />
       )}
 
-      {currentPage < totalNumberOfPages && (
+      {(currentPage < totalNumberOfPages && !isLoading) && (
         <PaginationButton
           direction="next"
           onClick={handleChangePage}

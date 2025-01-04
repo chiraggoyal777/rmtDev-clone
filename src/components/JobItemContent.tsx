@@ -3,7 +3,11 @@ import { useJobItem } from "../lib/hooks";
 import BookmarkIcon from "./BookmarkIcon";
 import Spinner from "./Spinner";
 
-export default function JobItemContent() {
+export default function JobItemContent({
+  viewType = "quick",
+}: {
+  viewType?: "full" | "quick";
+}) {
   const { activeId } = useActiveIdContext();
   const { jobItem, isLoading } = useJobItem(activeId);
 
@@ -15,10 +19,26 @@ export default function JobItemContent() {
     <section className="job-details">
       <div>
         <img src={jobItem.coverImgURL} alt="#" />
-
-        <a className="apply-btn" href={jobItem.companyURL} target="_blank">
-          Apply
-        </a>
+        <div className="job-details-actions">
+          {viewType !== "full" && (
+            <a
+              className="apply-btn"
+              href={`/${jobItem.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View full job
+            </a>
+          )}
+          <a
+            className="apply-btn"
+            href={jobItem.companyURL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Apply
+          </a>
+        </div>
 
         <section className="job-info">
           <div className="job-info__left">

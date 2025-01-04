@@ -1,49 +1,45 @@
-import Background from "./Background";
-import Container from "./Container";
-import Footer from "./Footer";
-import Header, { HeaderTop } from "./Header";
-import JobItemContent from "./JobItemContent";
-import Sidebar, { SidebarTop } from "./Sidebar";
-import PaginationControls from "./PaginationControls";
-import ResultsCount from "./ResultsCount";
-import SortingControls from "./SortingControls";
-import BookmarksButton from "./BookmarksButton";
-import Logo from "./Logo";
-import SearchForm from "./SearchForm";
-import { Toaster } from "react-hot-toast";
-import JobListSearch from "./JobListSearch";
+import { Route, Routes } from "react-router-dom";
+import ListingPage from "../pages/Listing";
+import HomePage from "../pages/Home";
+import ActiveIdContextProvider from "../contexts/ActiveIdContextProvider";
+import { useEffect } from "react";
+import { SS_KEY_BOOKMARKS_POPOVER, SS_KEY_SEARCH_PARAMS } from "../lib/constants";
 
 function App() {
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Remove session storage keys
+      [SS_KEY_BOOKMARKS_POPOVER, SS_KEY_SEARCH_PARAMS].forEach(key => sessionStorage.removeItem(key));
+    };
+
+    // Attach the event listener
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   return (
-    <>
-      <Background />
-      <Header>
-        <HeaderTop>
-          <Logo />
-          <BookmarksButton />
-        </HeaderTop>
-
-        <SearchForm />
-      </Header>
-
-      <Container>
-        <Sidebar>
-          <SidebarTop>
-            <ResultsCount />
-            <SortingControls />
-          </SidebarTop>
-
-          <JobListSearch />
-          <PaginationControls />
-        </Sidebar>
-
-        <JobItemContent />
-      </Container>
-
-      <Footer />
-
-      <Toaster position="top-right" />
-    </>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <ActiveIdContextProvider>
+            <HomePage />
+          </ActiveIdContextProvider>
+        }
+      />
+      {/* Dynamic route for search page */}
+      <Route
+        path="/:jobId"
+        element={
+          <ActiveIdContextProvider>
+            <ListingPage />
+          </ActiveIdContextProvider>
+        }
+      />
+    </Routes>
   );
 }
 

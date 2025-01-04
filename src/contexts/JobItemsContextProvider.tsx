@@ -2,6 +2,7 @@ import {
   ReactNode,
   createContext,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -9,6 +10,8 @@ import { TJobItem, TPaginationDirection, TSortBy } from "../lib/types";
 import { useSearchQuery } from "../hooks/useSearchQuery";
 import { COUNT_ON_PAGE } from "../lib/constants";
 import { useSearchTextContext } from "../hooks/useSearchTextContex";
+import { useNavigate } from "react-router-dom";
+import { pageParam } from "../lib/queryParams";
 
 type JobItemsContextType = {
   jobItems: TJobItem[] | undefined;
@@ -29,15 +32,21 @@ export default function JobItemsContextProvider({
 }: {
   children: ReactNode;
 }) {
-  const { debouncedSearchText } = useSearchTextContext();
-
-  const { jobItems, isLoading } = useSearchQuery(debouncedSearchText);
-  const [currentPage, setCurrentPage] = useState(1);
-
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const { searchText } = useSearchTextContext();
+  
+  const { jobItems, isLoading } = useSearchQuery(searchText);
+  
   const [sortBy, setSortBy] = useState<TSortBy>("relevant");
-
+  
   const totalNumberOfResults = jobItems?.length || 0;
-  const totalNumberOfPages = totalNumberOfResults / COUNT_ON_PAGE;
+  const totalNumberOfPages = Math.ceil(totalNumberOfResults / COUNT_ON_PAGE);
+  const searchPage = +(searchParams.get(pageParam) || 1);
+  const [currentPage, setCurrentPage] = useState(searchPage);
+  useEffect(() => {
+    !isLoading && setCurrentPage(searchPage > totalNumberOfPages ? 1 : searchPage);
+  }, [isLoading]);
 
   const jobItemsSorted = useMemo(
     () =>
@@ -74,6 +83,15 @@ export default function JobItemsContextProvider({
       setCurrentPage((prev) => prev - 1);
     }
   }, []);
+
+  useEffect(() => {
+    if (searchText && !isLoading) {
+      searchParams.set(pageParam, currentPage.toString());
+      navigate(`${location.pathname}?${searchParams.toString()}`, {
+        replace: true,
+      });
+    }
+  }, [currentPage, searchText, isLoading]);
 
   const contextValue = useMemo(
     () => ({

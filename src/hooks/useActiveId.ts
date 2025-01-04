@@ -1,21 +1,15 @@
-import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { jobIdParam } from "../lib/queryParams";
 
 export function useActiveId() {
-  const [activeId, setActiveId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      const id = +window.location.hash.slice(1);
-      setActiveId(id);
-    };
-    window.addEventListener("hashchange", handleHashChange);
-
-    handleHashChange();
-
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, []);
+  const { jobId } = useParams<{ jobId: string }>();
+  let activeId = null;
+  if (jobId) {
+    activeId = +(jobId || "");
+  } else {
+    const searchParams = new URLSearchParams(location.search);
+    activeId = +(searchParams.get(jobIdParam) || "");
+  }
 
   return activeId;
 }

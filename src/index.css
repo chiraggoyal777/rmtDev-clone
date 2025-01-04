@@ -20,10 +20,15 @@ a {
 }
 
 button {
+  cursor: pointer;
   font: inherit;
   border: initial;
   outline: initial; /* create alternative for focus state */
   background-color: initial;
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
 }
 
 input {
@@ -32,9 +37,16 @@ input {
   font: inherit;
 }
 
+svg path {
+  fill: currentColor
+}
 /* UTILITIES */
 .u-bold {
   font-weight: 700;
+}
+
+.pe-none {
+  pointer-events: none;
 }
 
 /* KEYFRAMES */
@@ -95,7 +107,7 @@ body::-webkit-scrollbar {
 .third-heading {
   font-size: 15px;
   font-weight: 500;
-  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .fourth-heading {
@@ -160,7 +172,7 @@ body::-webkit-scrollbar {
   justify-content: center;
   padding-top: 40px;
 
-  animation: intro 0.3s;
+  /* animation: intro 0.3s; */
 }
 
 .header__submit-job {
@@ -297,9 +309,11 @@ body::-webkit-scrollbar {
   transition: all 0.2s;
   /* pointer-events: none; */
 
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 82px;
+  max-height: 455px;
+  overflow: auto;
 }
 
 .job-list--bookmarks {
@@ -346,7 +360,7 @@ body::-webkit-scrollbar {
 
 /* JOB ITEM */
 .job-item {
-  cursor: pointer;
+  /* cursor: pointer; */
   transition: background-color 0.2s;
   background-color: #fff;
   /* flex: 1; */
@@ -366,6 +380,8 @@ body::-webkit-scrollbar {
 }
 
 .job-item__link {
+  cursor: pointer;
+  text-align: left;
   height: 100%;
   width: 100%;
   padding: 14px 20px;
@@ -399,6 +415,7 @@ body::-webkit-scrollbar {
 } */
 
 .job-item__middle {
+  flex-grow: 1;
 }
 
 .job-item__company {
@@ -478,18 +495,34 @@ body::-webkit-scrollbar {
 
 /* SEARCH */
 .search {
-  position: relative;
-  animation: intro 0.3s 0.1s backwards;
+  /* animation: intro 0.3s 0.1s backwards; */
+  width: max-content;
   margin: 0 auto;
-  width: 610px;
   margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.search > button {
+.search form {
+  position: relative;
+  width: 610px;
+  margin: 0 auto;
+}
+
+.search form > button {
   cursor: pointer;
   position: absolute;
-  top: 17px;
+  top: 18px;
   left: 25px;
+}
+
+.search form > button:last-child {
+  cursor: pointer;
+  position: absolute;
+  top: 18px;
+  right: 25px;
+  left: unset;
 }
 
 .search > button > i {
@@ -538,6 +571,26 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 0 4px rgba(47, 19, 19, 0.729);
 }
 
+/* BACK BTN */
+.back-btn {
+  background-color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  padding: 0;
+  border-radius: 999px;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.back-btn:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+.back-btn:active, .back-btn:focus {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
 /* CONTAINER */
 .container {
   margin: 0 12px;
@@ -549,7 +602,6 @@ body::-webkit-scrollbar {
   background-color: #fff;
   border-radius: 8px;
   display: flex;
-  border-top-right-radius: 9px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.07);
   margin-top: 40px;
   animation: intro 0.3s 0.2s backwards;
@@ -683,8 +735,12 @@ body::-webkit-scrollbar {
   flex: 1;
   background-color: #eff2f5;
   position: relative;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 8px;
+  border-radius: inherit;
+  /* overflow: hidden; */
+}
+.sidebar + .job-details, .sidebar + .job-details > div > img {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .job-details__start-view {
@@ -724,7 +780,9 @@ body::-webkit-scrollbar {
   top: 0;
   object-fit: cover;
   border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
   user-select: none;
+  overflow: hidden;
 }
 
 .job-details__other {
@@ -743,22 +801,26 @@ body::-webkit-scrollbar {
   font-size: 10px;
 }
 
+.job-details-actions {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* APPLY BTN */
 .apply-btn {
-  position: absolute;
   background-color: #2671dd;
-  z-index: 2;
   color: rgba(255, 255, 255, 0.92);
   font-size: 11px;
   padding: 5px 10px 6px;
   border-radius: 3px;
-  top: 12px;
-  right: 12px;
   cursor: pointer;
   text-transform: uppercase;
   transition: all 0.2s;
-  display: flex;
-  align-items: center;
 }
 
 .apply-btn:hover,
@@ -797,7 +859,6 @@ body::-webkit-scrollbar {
     rgba(0, 0, 0, 0.15)
   );
   z-index: -1;
-  border-top-right-radius: 8px;
 }
 
 .job-info__left {
@@ -1194,3 +1255,21 @@ body::-webkit-scrollbar {
     transform: translateX(-50%);
   }
 }
+
+/* SKELETON */
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(90deg, #d7dbe0 25%, #f4f4f4 50%, #d7dbe0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
