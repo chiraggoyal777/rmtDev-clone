@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { TJobItem } from "../lib/types";
-import BookmarkIcon from "./BookmarkIcon";
+import BookmarkButton from "./BookmarkButton";
 import { jobIdParam, searchParam } from "../lib/queryParams";
 import { SS_KEY_BOOKMARKS_POPOVER, SS_KEY_SEARCH_PARAMS } from "../lib/constants";
 
@@ -56,7 +56,7 @@ export default function JobListItem({
         </div>
 
         <div className="job-item__right">
-          <BookmarkIcon id={jobItem.id} />
+          <BookmarkButton id={jobItem.id} />
           <time className="job-item__time">{jobItem.daysAgo}d</time>
         </div>
       </div>

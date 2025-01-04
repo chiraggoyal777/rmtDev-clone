@@ -1,6 +1,6 @@
 import { useActiveIdContext } from "../hooks/useActiveIdContext";
 import { useJobItem } from "../lib/hooks";
-import BookmarkIcon from "./BookmarkIcon";
+import BookmarkButton from "./BookmarkButton";
 import Spinner from "./Spinner";
 
 export default function JobItemContent({
@@ -46,7 +46,7 @@ export default function JobItemContent({
             <div className="job-info__below-badge">
               <time className="job-info__time">{jobItem.daysAgo}d</time>
 
-              <BookmarkIcon id={jobItem.id} />
+              <BookmarkButton id={jobItem.id} />
             </div>
           </div>
 
