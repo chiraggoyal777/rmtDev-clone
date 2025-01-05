@@ -88,7 +88,7 @@ export default function JobItemsContextProvider({
   }, []);
 
   useEffect(() => {
-    if (searchText) {
+    if (searchText && !isLoading) {
       const URLQueryParams = new URLSearchParams(location.search);
       URLQueryParams.set(pageParam, currentPage.toString());
       URLQueryParams.set(sortParam, sortBy.toString());

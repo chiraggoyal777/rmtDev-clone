@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { useQueryParams } from "../lib/hooks";
 import { useNavigate } from "react-router-dom";
-import { searchParam } from "../lib/queryParams";
+import { pageParam, searchParam } from "../lib/queryParams";
 import { useRouterJobId } from "../hooks/useActiveId";
 
 type SearchTextContextType = {
@@ -28,6 +28,7 @@ export default function SearchTextContextProvider({
   const handleChangeSearchText = (newSearchText: string) => {
     setSearchVal(newSearchText);
     URLQueryParams.set(searchParam, newSearchText);
+    URLQueryParams.set(pageParam, (1).toString());
     navigate(`/?${URLQueryParams.toString()}`, {
       replace: true,
     });
