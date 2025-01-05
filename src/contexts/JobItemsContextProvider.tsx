@@ -9,9 +9,10 @@ import {
 import { TJobItem, TPaginationDirection, TSortBy } from "../lib/types";
 import { useSearchQuery } from "../hooks/useSearchQuery";
 import { COUNT_ON_PAGE } from "../lib/constants";
-import { useSearchTextContext } from "../hooks/useSearchTextContex";
+import { useSearchTextContext } from "../hooks/useSearchTextContext";
+import { useQueryParams } from "../lib/hooks";
 import { useNavigate } from "react-router-dom";
-import { pageParam } from "../lib/queryParams";
+import { pageParam, sortParam } from "../lib/queryParams";
 
 type JobItemsContextType = {
   jobItems: TJobItem[] | undefined;
@@ -33,19 +34,21 @@ export default function JobItemsContextProvider({
   children: ReactNode;
 }) {
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(location.search);
+  const { pageQ, sortByQ } = useQueryParams();
   const { searchText } = useSearchTextContext();
-  
+
   const { jobItems, isLoading } = useSearchQuery(searchText);
-  
-  const [sortBy, setSortBy] = useState<TSortBy>("relevant");
-  
+
+  const [sortBy, setSortBy] = useState<TSortBy>(sortByQ);
+
   const totalNumberOfResults = jobItems?.length || 0;
   const totalNumberOfPages = Math.ceil(totalNumberOfResults / COUNT_ON_PAGE);
-  const searchPage = +(searchParams.get(pageParam) || 1);
+  const searchPage = +(pageQ || 1);
   const [currentPage, setCurrentPage] = useState(searchPage);
+
   useEffect(() => {
-    !isLoading && setCurrentPage(searchPage > totalNumberOfPages ? 1 : searchPage);
+    !isLoading &&
+      setCurrentPage(searchPage > totalNumberOfPages ? 1 : searchPage);
   }, [isLoading]);
 
   const jobItemsSorted = useMemo(
@@ -85,13 +88,15 @@ export default function JobItemsContextProvider({
   }, []);
 
   useEffect(() => {
-    if (searchText && !isLoading) {
-      searchParams.set(pageParam, currentPage.toString());
-      navigate(`${location.pathname}?${searchParams.toString()}`, {
+    if (searchText) {
+      const URLQueryParams = new URLSearchParams(location.search);
+      URLQueryParams.set(pageParam, currentPage.toString());
+      URLQueryParams.set(sortParam, sortBy.toString());
+      navigate(`/?${URLQueryParams.toString()}`, {
         replace: true,
       });
     }
-  }, [currentPage, searchText, isLoading]);
+  }, [currentPage, searchText, sortBy]);
 
   const contextValue = useMemo(
     () => ({

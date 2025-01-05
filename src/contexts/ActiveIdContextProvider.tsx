@@ -1,7 +1,8 @@
 import { ReactNode, createContext } from "react";
 import { useActiveId } from "../hooks/useActiveId";
+import { TJobItemId } from "../lib/types";
 
-type ActiveIdContextType = { activeId: number | null };
+type ActiveIdContextType = { activeId: TJobItemId | null };
 
 export const ActiveIdContext = createContext<ActiveIdContextType | null>(null);
 

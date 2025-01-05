@@ -1,11 +1,11 @@
-import { ReactNode, createContext, useState } from "react";
-import { useDebounce } from "../lib/hooks";
+import { ReactNode, createContext, useEffect, useState } from "react";
+import { useQueryParams } from "../lib/hooks";
 import { useNavigate } from "react-router-dom";
 import { searchParam } from "../lib/queryParams";
+import { useRouterJobId } from "../hooks/useActiveId";
 
 type SearchTextContextType = {
   searchText: string;
-  debouncedSearchText: string;
   handleChangeSearchText: (newSearchText: string) => void;
 };
 
@@ -20,24 +20,26 @@ export default function SearchTextContextProvider({
 }) {
   const navigate = useNavigate();
   // Parse the query string
-  const searchParams = new URLSearchParams(location.search);
-  const query = searchParams.get(searchParam); // Extract searchParam parameter
-  const [searchText, setSearchText] = useState(query || "");
-
-  const debouncedSearchText = useDebounce(searchText, 500);
-
+  const URLQueryParams = new URLSearchParams(location.search);
+  const routerJobId = useRouterJobId();
+  const { searchQ } = useQueryParams();
+  const [searchVal, setSearchVal] = useState(searchQ || "");
+  const searchText = routerJobId ? searchVal : searchQ || "";
   const handleChangeSearchText = (newSearchText: string) => {
-    setSearchText(newSearchText);
-    // Add or update the new parameter
-    searchParams.set(searchParam, newSearchText);
-    navigate(`/?${searchParams.toString()}`, {
+    setSearchVal(newSearchText);
+    URLQueryParams.set(searchParam, newSearchText);
+    navigate(`/?${URLQueryParams.toString()}`, {
       replace: true,
     });
   };
+
+  // 2 way binding
+  useEffect(() => {
+    searchText && setSearchVal(searchText);
+  }, [searchText]);
+  
   return (
-    <SearchTextContext.Provider
-      value={{ searchText, debouncedSearchText, handleChangeSearchText }}
-    >
+    <SearchTextContext.Provider value={{ searchText, handleChangeSearchText }}>
       {children}
     </SearchTextContext.Provider>
   );

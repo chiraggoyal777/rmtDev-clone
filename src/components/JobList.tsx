@@ -1,6 +1,6 @@
 import { useActiveIdContext } from "../hooks/useActiveIdContext";
 import { COUNT_ON_PAGE } from "../lib/constants";
-import { TJobItem } from "../lib/types";
+import { TJobItem, TJobItemId } from "../lib/types";
 import JobListItem from "./JobListItem";
 // import Skeleton from "./Skeleton";
 // import Spinner from "./Spinner";
@@ -9,6 +9,10 @@ type JobListProps = {
   jobItems: TJobItem[];
   isLoading: boolean;
   source?: "listing" | "bookmark";
+  renderJobListItem?: (
+    jobItem: TJobItem,
+    activeId: TJobItemId | null
+  ) => JSX.Element;
 };
 import Skeleton from "./Skeleton";
 
@@ -39,25 +43,31 @@ function JobListItemSkeleton() {
   );
 }
 // reusable component - can't use
-export function JobList({ jobItems, isLoading, source = "listing" }: JobListProps) {
+export function JobList({
+  jobItems,
+  isLoading,
+  source = "listing",
+  renderJobListItem,
+}: JobListProps) {
   const { activeId } = useActiveIdContext();
 
   return (
     <ul className="job-list">
-      {isLoading && (
-        Array.from({ length: source === "bookmark" ? 3 : COUNT_ON_PAGE }).map((_, index) => <JobListItemSkeleton key={index} />)
-      )}
+      {isLoading &&
+        Array.from({ length: source === "bookmark" ? 3 : COUNT_ON_PAGE }).map(
+          (_, index) => <JobListItemSkeleton key={index} />
+        )}
 
       {!isLoading &&
-        jobItems.map((jobItem) => (
-          <JobListItem
-            jobItem={jobItem}
-            key={jobItem.id}
-            isActive={jobItem.id === activeId}
-            openAsFullView={source !== "listing"}
-            fromBookmarksPopover={source === "bookmark"}
-          />
-        ))}
+        (renderJobListItem
+          ? jobItems.map((jobItem) => renderJobListItem(jobItem, activeId))
+          : jobItems.map((jobItem) => (
+              <JobListItem
+                jobItem={jobItem}
+                key={jobItem.id}
+                isActive={jobItem.id === activeId}
+              />
+            )))}
     </ul>
   );
 }

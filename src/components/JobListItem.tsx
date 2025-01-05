@@ -1,36 +1,30 @@
 import { useNavigate } from "react-router-dom";
 import { TJobItem } from "../lib/types";
 import BookmarkButton from "./BookmarkButton";
-import { jobIdParam, searchParam } from "../lib/queryParams";
-import { SS_KEY_BOOKMARKS_POPOVER, SS_KEY_SEARCH_PARAMS } from "../lib/constants";
+import { jobIdParam } from "../lib/queryParams";
+import { useRouterJobId } from "../hooks/useActiveId";
+import { SS_KEY_BOOKMARKS_POPOVER } from "../lib/constants";
 
 export default function JobListItem({
   jobItem,
   isActive,
   openAsFullView,
-  fromBookmarksPopover
 }: {
   jobItem: TJobItem;
   isActive: boolean;
   openAsFullView?: boolean;
-  fromBookmarksPopover?: boolean;
 }) {
+  const routerJobId = useRouterJobId();
   const navigate = useNavigate();
   function handleJobItemClick() {
-    const searchParams = new URLSearchParams(location.search);
+    const URLQueryParams = new URLSearchParams(location.search);
     if (openAsFullView) {
-      if (fromBookmarksPopover && Array.from(searchParams.entries()).length > 0 && searchParams.has(searchParam)) {
-        sessionStorage.setItem(SS_KEY_BOOKMARKS_POPOVER, "true");
-        sessionStorage.setItem(SS_KEY_SEARCH_PARAMS, searchParams.toString());
-      }
-      // searchParams.delete(jobIdParam);
-      // navigate(`/${jobItem.id}?${searchParams.toString()}`);
-
-      navigate(`/${jobItem.id}`);
+      sessionStorage.setItem(SS_KEY_BOOKMARKS_POPOVER, "true");
+      navigate(`/${jobItem.id}`, { replace: !!routerJobId });
     } else {
       // Add or update the new parameter
-      searchParams.set(jobIdParam, jobItem.id.toString());
-      navigate(`${location.pathname}?${searchParams.toString()}`, {
+      URLQueryParams.set(jobIdParam, jobItem.id.toString());
+      navigate(`${location.pathname}?${URLQueryParams.toString()}`, {
         replace: true,
       });
     }

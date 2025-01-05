@@ -7,6 +7,8 @@ export type TJobItem = {
   relevanceScore: number;
 };
 
+export type TJobItemId = TJobItem["id"];
+
 export type TJobItemDetails = TJobItem & {
   description: string;
   qualifications: string[];

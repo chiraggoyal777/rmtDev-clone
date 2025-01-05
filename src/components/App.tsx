@@ -1,45 +1,44 @@
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ListingPage from "../pages/Listing";
 import HomePage from "../pages/Home";
+import BookmarkContextProvider from "../contexts/BookmarksContextProvider";
+import SearchTextContextProvider from "../contexts/SearchTextContextProvider";
+import JobItemsContextProvider from "../contexts/JobItemsContextProvider";
 import ActiveIdContextProvider from "../contexts/ActiveIdContextProvider";
-import { useEffect } from "react";
-import { SS_KEY_BOOKMARKS_POPOVER, SS_KEY_SEARCH_PARAMS } from "../lib/constants";
 
 function App() {
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      // Remove session storage keys
-      [SS_KEY_BOOKMARKS_POPOVER, SS_KEY_SEARCH_PARAMS].forEach(key => sessionStorage.removeItem(key));
-    };
-
-    // Attach the event listener
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <ActiveIdContextProvider>
-            <HomePage />
-          </ActiveIdContextProvider>
-        }
-      />
-      {/* Dynamic route for search page */}
-      <Route
-        path="/:jobId"
-        element={
-          <ActiveIdContextProvider>
-            <ListingPage />
-          </ActiveIdContextProvider>
-        }
-      />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <BookmarkContextProvider>
+              <SearchTextContextProvider>
+                <JobItemsContextProvider>
+                  <ActiveIdContextProvider>
+                    <HomePage />
+                  </ActiveIdContextProvider>
+                </JobItemsContextProvider>
+              </SearchTextContextProvider>
+            </BookmarkContextProvider>
+          }
+        />
+        {/* Dynamic route for search page */}
+        <Route
+          path="/:jobId"
+          element={
+            <BookmarkContextProvider>
+              <SearchTextContextProvider>
+                <ActiveIdContextProvider>
+                  <ListingPage />
+                </ActiveIdContextProvider>
+              </SearchTextContextProvider>
+            </BookmarkContextProvider>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
